@@ -4,7 +4,7 @@ Written by Patrick Nyarukowa
 
 ![][image1]
 
-# ![][image2]
+# ![][image2](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/409530e798a5d16c7ecdc2c6406017169494a993/Intermediate%20Nmap/Screenshots/room%20info.PNG)
 
 ## **Introduction**
 

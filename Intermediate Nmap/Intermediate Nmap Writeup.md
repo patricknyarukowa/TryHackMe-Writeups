@@ -4,8 +4,6 @@ Written by Patrick Nyarukowa
 
 ![image1](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/409530e798a5d16c7ecdc2c6406017169494a993/Intermediate%20Nmap/Screenshots/room%20info.PNG)
 
-# ![][image2]
-
 ## **Introduction**
 
 In this writeup I will be walking you through the approach I took in completing the Intermediate Nmap room on Tryhackme. I will include the link to this room at the end as well as other resources I used to help me complete this room.
@@ -18,7 +16,7 @@ This CTF has an easy difficulty and the goal of this room is to practice our net
 
 As always, I started off by scanning the target machine using nmap
 
-![][image3]
+![image3](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/eef3b40035a23dacc556ca82e68f6153cc5957c1/Intermediate%20Nmap/Screenshots/nmap%20scan.PNG)
 
 The **nmap** command can be broken down as follows:
 
@@ -28,22 +26,22 @@ The **nmap** command can be broken down as follows:
 
 The result from the **nmap** scan showed that there are 3 ports open: **SSH** service on port 22, another **SSH** service on port 2222 and another service on port 31337\.  Also the login information left for the service on port 31337 — user “ubuntu” and password “Dafdas\!\!/str0ng”
 
-![][image4]
+![image4](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/eef3b40035a23dacc556ca82e68f6153cc5957c1/Intermediate%20Nmap/Screenshots/nmap%20result.PNG)
 
 ## **Finding the flag**
 
 In the **nmap** output we notice that the user credentials left under the service running on port 31337\. We can assume that these could be credentials we can use to **SSH** into the service on port 2222 or port 22\. We start of by trying to long into the service on port 2222:
 
-![][image5]
+![image5](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/eef3b40035a23dacc556ca82e68f6153cc5957c1/Intermediate%20Nmap/Screenshots/second%20ssh%20attempt.PNG)
 
 From the results we see that permission to log into the machine running on this service is denied. Next, we try again to log in the the target machine using the **SSH** credentials on port 22:  
-![][image6]
+![image6](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/eef3b40035a23dacc556ca82e68f6153cc5957c1/Intermediate%20Nmap/Screenshots/final%20attempt.PNG)
 
 After attempting to log in we finally establish a connection and get access to the machine as the user ubuntu. 
 
 We not try to navigate the machine to look for the flag and we finally find it inside the user directory:
 
-![][image7]
+![image7](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/eef3b40035a23dacc556ca82e68f6153cc5957c1/Intermediate%20Nmap/Screenshots/flag.PNG)
 
 ## **Takeaways** 
 

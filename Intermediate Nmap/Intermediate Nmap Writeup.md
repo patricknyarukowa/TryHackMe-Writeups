@@ -2,9 +2,9 @@ Written by Patrick Nyarukowa
 
 # **Intermediate Nmap Writeup**
 
-![][image1]
+![image1](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/409530e798a5d16c7ecdc2c6406017169494a993/Intermediate%20Nmap/Screenshots/room%20info.PNG)
 
-# ![][image2](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/409530e798a5d16c7ecdc2c6406017169494a993/Intermediate%20Nmap/Screenshots/room%20info.PNG)
+# ![][image2]
 
 ## **Introduction**
 

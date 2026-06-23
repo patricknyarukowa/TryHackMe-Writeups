@@ -16,7 +16,7 @@ This was a medium difficulty room needing me to assess the application like a re
 
 I started off the assessment by scanning the target IP using **nmap**
 
-![][image3]
+![image3](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/ff15ea400aed760a0784454d16f6addd7ba448c7/Recruit/Screenshots/nmap%20command.PNG)
 
 The **nmap** command can be broken down as follows:
 
@@ -27,15 +27,15 @@ The **nmap** command can be broken down as follows:
 
 From the scanned **nmap** results, I found that 3 ports were opened: port 22, port 53 and port 80\. 
 
-![][image4]
+![image4](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/nmap%20scan.PNG)
 
 I opened the target on my browser using port 80 which took me to a login form.
 
-![][image5]
+![image5](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/Login%20page.PNG)
 
 I decided to go back to my terminal and enumerate further. I used **gobuster** to scan for any hidden directories or files.
 
-![][image6]
+![image6](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/gobaster%20scan.PNG)
 
 The **gobuster** command can be broken down as follows:
 
@@ -46,43 +46,47 @@ The **gobuster** command can be broken down as follows:
 
 The results of the **gobuster** scan showed some interesting results. The /api.php, /config.php, /file.php and /mail files and directory drew my attention. 
 
-![][image7]
+![image7](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/gobuster%20results.PNG)
 
 I then opened the /api.php file and found an interesting hint
 
-![][image8]
+![image8](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/api%20php%20page.PNG)
 
 The “/file.php?cv=\<URL\>” suggested that there might be a Local file inclusion or SSRF vulnerability somewhere. I opened the mail.log file in the /mail directory and found a bigger hint.
 
-![][image9]
+![image9](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/mail%20log%20file.PNG)
 
 We found that the HR credentials are currently stored in the config.php file in the application. Also the administration credentials are stored in the backend database. The issue is, when I open the config.php file its blank
 
-![][image10]
+![image10](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/rmpty%20config%20file.PNG)
 
 ## **Exploitation**
 
-If we remember from our /api.php hint, we know that /file.php accepts api parameters. I tried to access the config.php file with a SSRF attack. The attack failed. But this gave me another hint, that local file inclusion was the likely vulnerability. Next, I tried file protocol access. 
+If we remember from our /api.php hint, we know that /file.php accepts api parameters. I tried to access the config.php file with a SSRF attack. The attack failed.
 
-![][image11]
+![image18](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/exploit%20attempt%201.PNG)
+
+But this gave me another hint, that local file inclusion was the likely vulnerability. Next, I tried file protocol access. 
+
+![image11](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/exploit%20attempt%202.PNG)
 
 I was successful and was able to access the config.php file and retrieve the HR credentials (HR: hrpassword123). After retrieving the credentials, I was able to log in and access the user flag.
 
-![][image12]
+![image12](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/flag%201.PNG)
 
 ## **Privilege Escalation**
 
 Upon seeing the dashboard, I noticed a search bar which showed a potential SQL Injection attack surface. I decided to test it out with a ‘ and error message confirmed my suspicion.
 
-![][image13]
+![image13](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/sqli%20test.PNG)
 
 I decided to use a **UNION SELECT** payload counting 4 columns and also including the username and password columns in the select statement to retrieve the admin credentials. 
 
-![][image14]
+![image14](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/sqi%20payload.PNG)
 
 I was able to retrieve the admin credentials from the backend database. I used these credentials to login to the Recruit application again and access the admin flag.
 
-![][image15]
+![image15](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/cc510db4477daa731bab9e8e8012325f77c98b95/Recruit/Screenshots/flag%202.PNG)
 
 ## **Takeaways** 
 

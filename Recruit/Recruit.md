@@ -2,9 +2,7 @@ Written by Patrick Nyarukowa
 
 # **Recruit Writeup**
 
-![][image1]
-
-# ![][image2]
+![image1][https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3f76ef6d794b3385bbb68dbd266e88528bf5fd11/Recruit/Screenshots/room%20info.PNG]
 
 ## **Introduction**
 

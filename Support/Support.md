@@ -2,9 +2,7 @@ Written by Patrick Nyarukowa
 
 # **Support Writeup**
 
-![][image1]
-
-# ![][image2]
+![image1](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/room%20info.PNG)
 
 ## **Introduction**
 
@@ -18,7 +16,7 @@ This was a medium difficulty CTF challenge that required me to pentest a Support
 
 ## I started off the assessment by scanning the target ip using **nmap** 
 
-![][image3]
+![image3](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/Nmap%20command.PNG)
 
 The **nmap** command can be broken down as follows:
 
@@ -29,11 +27,11 @@ The **nmap** command can be broken down as follows:
 
 The **nmap** result showed that there were two open ports, port 22 and port 80\.
 
-![][image4]
+![image4](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/nmap%20result.PNG)
 
 I also used **gobuster** to scan the target server for any hidden directories or files.
 
-![][image5]
+![image5](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/gobuster%20command.PNG)
 
 The gobuster command can be broken down as follows:
 
@@ -44,17 +42,17 @@ The gobuster command can be broken down as follows:
 
 The **gobuster** results showed some interesting hidden files and directories, specifically /skins, /config.php and /api.php
 
-![][image6]
+![image6](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/gobuster%20result.PNG)
 
 ## **Initial Access**
 
 I decided to open the target ip on my browser on port 80\. It took me to the support log in page
 
-![][image7]
+![image7](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/support%20login%20page.PNG)
 
 After exploring the webpage and seeing that I could not sign up for an account, I came to the conclusion that you could only access the server only if you were an employee. I decided to use **hydra** to bruteforce credentials using “[help@support.thm](mailto:help@support.thm)” as the username
 
-![][image8]
+![image8](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/hydra%20command.PNG)
 
 The **hydra** command can be broken down as follows:
 
@@ -64,57 +62,57 @@ The **hydra** command can be broken down as follows:
 
 The results gave me the password to the “[help@support.thm](mailto:help@support.thm)” username
 
-![][image9]
+![image9](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/hydra%20result.PNG)
 
 I was able to use these credentials and log in and access the support dashboard
 
-![][image10]
+![image10](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/support%20dashboard.PNG)
 
 ## **Privilege Escalation**
 
 I decided the inspect the browsers cookie sessions and I found a cookie called isITUser which has a hash value
 
-![][image11]
+![image11](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/cookie%20false.PNG)
 
 I used CrackStation to try and crack the hash. The hash turned out to be an MD5 hash that translated to **false**
 
-![][image12]
+![image12](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/md5%20decrypt.PNG)
 
 I decided to create another hash for the cookie that translates to **true** so that I can use it to escalate my privileges
 
-![][image13]
+![image13](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/md5%20encrypt.PNG)
 
 I pasted my new cookie hash into the value section and refreshed my browser. This resulted in my privileges being escalated to an IT User
 
-![][image14]
+![image14](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/IT%20User%20escalation.PNG)
 
 ## **Credential Harvesting**
 
 When you try to change the theme, the skin parameter (***dashboard.php?skin=***) in the URL indicates that there could be a local file inclusion vulnerability in the website. If you remember from the **gobuster** scan, there was a hidden **/config.php** file in the results. I decided to use directory traversal to access the config file. I opened the page source to extract the hardcoded values. It showed me a master password.
 
-![][image15]
+![image15](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/lfi%20vuln.PNG)
 
 I went back to the dashboard page and opened the api page. The information on this page gave some interesting hints
 
-![][image16]
+![image16](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/api%20page.PNG)
 
 The API request made me suspect that there could be an Insecure Direct Object Reference if I tried changing the URL to different user id’s. I decided to change the url and add **/user/1** and found the admin account details
 
-![][image17]
+![image17](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/idor%20vuln.PNG)
 
 I used the found admin credentials to log in as admin and found the flag value
 
-![][image18]
+![image18](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/flag1.PNG)
 
 ## **Command Injection**
 
 As an admin, the dashboard adds the date/time picker to the dashboard. The input field for setting the date/time is vulnerable to Command Injection. I decided to test this out by trying to check the id
 
-![][image19]
+![image19](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/command%20injection%20test.PNG)
 
 From there I checked for the user.txt file in the **/home/ubuntu** directory
 
-![][image20]
+![image20](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/flag2.PNG)
 
 ## **Takeaways**
 

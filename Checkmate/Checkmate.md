@@ -2,9 +2,7 @@ Written by Patrick Nyarukowa
 
 # **Checkmate Writeup**
 
-![][image1]
-
-# ![][image2]
+![image1](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/room%20info.PNG)
 
 ## **Introduction**
 
@@ -18,11 +16,11 @@ This was an easy level difficulty CTF. It required me to conduct a password secu
 
 I started off by accessing the main application at : http://\<target\>:5000 
 
-![][image3]
+![image3](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/Home.PNG)
 
 Upon looking at the different level tabs I discovered that throughout the course of this lab I am going to be accessing different virtual hosts such as **firewall.thm, jobs.thm and social.thm**. So I will need to configure the /etc/hosts file to be able to access them. I used the following command to edit the **/etc/hosts** file in order to access virtual hosts:
 
-![][image4]
+![image4](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/room%20sites.PNG)
 
 By configuring local hostname resolution:
 
@@ -34,17 +32,17 @@ By configuring local hostname resolution:
 
 The first challenge involves a firewall management console running on firewall.thm:5001. The room description hints that Marco deployed the firewall but forgot to change the default credentials.
 
-![][image5]
+![image5](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/firewall%20login.PNG)
 
 After a couple of guesses, the credentials **admin/12345** passed the authentication check and took me to the admin dashboard
 
-![][image6]
+![image6](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/admin%20dashboard.PNG)
 
 ## **Level 2**
 
 The next target was an employee login portal hosted on jobs.thm:5002. The challenge description seems to hint that Marco used common company keywords for the password. I decided to use **CeWL** to generate a custom worldist using the company keywords.
 
-![][image7]
+![image7](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/CeWL%20command.PNG)
 
 The command can be broken down as follows:
 
@@ -55,11 +53,11 @@ The command can be broken down as follows:
 
 This resulted in the keywords.txt file being created with the password wordlist generated
 
-![][image8]
+![image8](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/cewl%20results.PNG)
 
 I decided to use **hydra** to bruteforce the employee login portal by using marco as the username and keywords.txt as the wordlist. 
 
-![][image9]
+![image9](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/jobs%20hydra%20command.PNG)
 
 The **hydra** command can be broken down as follows:
 
@@ -73,11 +71,11 @@ The **hydra** command can be broken down as follows:
 
 This resulted in the employees password being found
 
-![][image10]
+![image10](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/jobs%20hydra%20result.PNG)
 
 I used the found password to login and access the employee dashboard
 
-![][image11]
+![image11](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/jobs%20portal.PNG)
 
 ## **Level 3**
 
@@ -87,21 +85,21 @@ The challenge description says:
 
  In level 2 we found Marcos personal information after logging into his employee portal. This personal information can be weaponised to create highly targeted wordlists. I decided to use Marco’s personal information to create a custom wordlist using **CUPP**. 
 
-![][image12]
+![image12](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/cuppy%20command.PNG)
 
 I skipped the other inputs and used the following tweaks
 
-![][image13]
+![image13](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/marco%20wordlist.PNG)
 
 After generating the wordlist, I generated another **hydra** attack targeting the username marco on the social.thm
 
-![][image14]
+![image14](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/hydra%20socials%20command.PNG)
 
-![][image15]
+![image15](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/hydra%20socials%20result.PNG)
 
 I used the credentials to bypass the socials login and access Marco’s social media profile
 
-![][image16]
+![image16](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/socials%20dashboard.PNG)
 
 ## **Level 4**
 
@@ -111,10 +109,10 @@ The challenge description says:
 
  After logging into Marco’s account, I decided to inspect the profile picture using the page source.
 
-![][image17]
+![image17](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/inspected%20profile%20source.PNG)
 
 I found a SHA-256 hash as the filename. I decided to use **Crackstation** to crack the hash and reveal the plaintext file name. The file name is revealed as **family**  
-![][image18]
+![image18](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/picture%20hash.PNG)
 
 ## 
 
@@ -126,11 +124,11 @@ The challenge description says:
 
 Marco made the mistake of revealing his password generation methodology on his social media
 
-![][image19]
+![image19](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/marco%20post.PNG)
 
 From the observed pattern, it was clear that the passwords likely included year-based values (20XX) along with common organizational keywords (security, excellence, innovation, digital, cloud). To leverage this insight, I focused on generating all possible combinations of these keywords paired with year numbers. I used **crunch** to generate a custom wordlist based on the pattern Marco normally uses.
 
-![][image20]
+![image20](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/crunch%20command.PNG)
 
 The **crunch** command can be explained as follows:
 
@@ -148,11 +146,11 @@ crunch \[min\] \[max\] \[charset\]: Generates passwords with a fixed length usin
 
 After generating the passlist, I used hydra against the SSH service
 
-![][image21]
+![image21](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/hydra%20level%205.PNG)
 
 This resulted in the password being retrieved
 
-![][image22]
+![image22](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/848bad4701e823be59277f0d46503a9559a59f59/Checkmate/Screenshots/hydra%20level%205%20result.PNG)
 
 This granted me access to the final service thus completing the challenge 
 

@@ -14,7 +14,7 @@ This was a medium difficulty CTF challenge that required me to pentest a Support
 
 ## **Reconnaissance**
 
-## I started off the assessment by scanning the target ip using **nmap** 
+I started off the assessment by scanning the target ip using **nmap** 
 
 ![image3](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/3c0c09040e64fc27830f126ec84a75c015b0ebf0/Support/Screenshots/Nmap%20command.PNG)
 

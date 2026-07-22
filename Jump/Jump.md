@@ -56,7 +56,7 @@ I ran the **pspy64** file and found 2 interesting processes
 
 ![image12](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/pspy64%20result.PNG)
 
-I opened the [backup.sh](http://backup.sh) script and realised I could add a bash reverse shell payload that could establish a reverse shell back to my machine achieving RCE. 
+I opened the backup.sh script and realised I could add a bash reverse shell payload that could establish a reverse shell back to my machine achieving RCE. 
 
 ![image13](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/backup.sh%20bash%20script.PNG)
 

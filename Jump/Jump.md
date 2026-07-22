@@ -2,9 +2,7 @@ Written by Patrick Nyarukowa
 
 # **Jump Writeup**
 
-![][image1]
-
-# ![][image2]
+![image2](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/room%20info.PNG)
 
 ## **Introduction**
 
@@ -18,117 +16,118 @@ This was an easy difficulty CTF challenge that required me to escalate my privil
 
 I started of by scanning the target using **nmap**
 
-**![][image3]**
+![image3](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/nmap%20scan.PNG)
 
 The results from the scan showed that there were two open ports, port 21 and port 22\. The results also showed that we can log into the server on port 21 with the anonymous credentials. It also showed that there are 2 directories, pub and incoming.
 
-![][image4]
+![image4](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/nmap%20result.PNG)
 
 I logged in and found some files in the pub directory
 
-![][image5]
+![image5](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/readme%20path.PNG)
 
 I downloaded the README.txt file and found a hint
 
-![][image6]
+![image6](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/README%20file%20hint.PNG)
 
 ## **Recon\_user Flag**
 
 This gave me the idea to upload a script to the incoming directory which, when executed, would establish a reverse shell back to my machine achieving Remote Code Execution (RCE). I created a bash reverse shell payload and uploaded it to the incoming directory.
 
-![][image7]
+![image7](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/sh%20shell.PNG)
 
-![][image8]
+![image8](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/Ftp%20shell%20upload.PNG)
 
 I also downloaded **Penelope** that I would use to listen and establish the reverse shell
 
-![][image9]
+![image9](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/penylope%20rce%20listener.PNG)
 
 After receiving the connection I was able to gain access to the target as recon\_user and get the recon\_user flag
 
-![][image10]
+![image10](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/flag1.PNG)
 
 ## **Dev\_user Flag**
 
 I downloaded **pspy64** in order to try and monitor any running processes that I could try to hijack in order to escalate my privileges. I used wget to retrieve the **pspy64** file from my machine onto the recon\_user machine
 
-![][image11]
+![image11](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/pspy64%20wget.PNG)
 
 I ran the **pspy64** file and found 2 interesting processes
 
-![][image12]
+![image12](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/pspy64%20result.PNG)
 
 I opened the [backup.sh](http://backup.sh) script and realised I could add a bash reverse shell payload that could establish a reverse shell back to my machine achieving RCE. 
 
-![][image13]
+![image13](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/backup.sh%20bash%20script.PNG)
 
 Back on my machine, I used **netcat** to listen in on port 5555\. I managed to archive RCE and capture the dev\_user flag
 
-![][image14]
+![image14](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/flag%202.PNG)
 
 ## **Monitor\_user Flag**
 
 If we remember from the **pspy64** scan results, there was another interesting process running, the /usr/local/bin/healthcheck. I opened the healthcheck file to find any hints 
 
-![][image15]
+![image15](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/healthcheck%20file.PNG)
 
 The ps gives us the hint that we can do a path hijack. I decided to open the /etc/systemd/system/ directory and check for services running. I found 2 services
 
-![][image16] 
+![image16](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/healthcheck%20and%20timer%20enumerations.PNG)
 
 I opened both files to enumerate further
 
-![][image17]![][image18]
+![image17](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/healthcheck%20service%20file.PNG)
+![image18](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/healthcheck%20timer%20file.PNG)
 
 These results helped me conclude that a systemd timer (healthcheck.timer) runs healthcheck.service every 60 seconds as monitor\_user. The service executes /usr/local/bin/healthcheck, which calls ps without an absolute path. Because the service's PATH places /opt/dev/bin first, planting a malicious ps at /opt/dev/bin/ps can cause it to execute as monitor\_user on each cycle.  This brought up the idea of a PATH hijacking privilege escalation via a writable directory in a service's PATH. I created an ssh key that would allow me to establish an ssh connection through the payload.
 
-![][image19]
+![image19](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/ssh%20key%20generation.PNG)
 
 I pasted this ssh key into the ps binary payload in the ps file
 
-![][image20]
+![image20](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/monitor%20user%20payload.PNG)
 
 Thereafter, I decided to ssh into the monitor\_user machine and retrieve the flag
 
-![][image21]
+![image21](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/monitor%20shell%20connection.PNG)
 
-![][image22]
+![image22](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/flag%203.PNG)
 
 ## **Ops\_user Flag**
 
 I ran the sudo \-l command to find out what sudo privileges I have. 
 
-![][image23]
+![image23](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/deploy_helper%20hint.PNG)
 
 When I open the /deploy\_helper.sh file I got another hint
 
-![][image24]
+![image24](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/deploy%20helper%20hint.PNG)
 
 Upon opening the /deploy\_helper.sh file I decided to use the previous payload method of using PATH hijacking privilege escalation
 
-![][image25]
+![image25](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/optuser%20payload.PNG)
 
 After saving the payload, I ran the sudo \-u command to allow me to pivot laterally to ops\_user account
 
-![][image26]
+![image26](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/opsuser%20sudo%20command.PNG)
 
 Next, I decided to ssh into the ops\_user account and retrieve the ops\_user flag
 
-![][image27]
+![image27](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/opsuser%20ssh.PNG)
 
 ## **Root Flag**
 
 I started off by running the sudo \-l command to see what privileges I have 
 
-![][image28]
+![image28](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/root%20sudo%20l%20command.PNG)
 
 I decided to use **GTFOBins** to find out how I could escalate my privileges to root with less command 
 
-![][image29]
+![image29](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/less%20(root)%20vuln.PNG)
 
 I used the less command as described in **GTFOBins** and retrieved the root flag
 
-![][image30]
+![image30](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/c22e0dbbd6d8a44ebb10b5d07e1553a188a7aaa7/Jump/Screenshots/flag%205.PNG)
 
 ## **Takeaways**
 

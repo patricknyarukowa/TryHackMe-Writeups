@@ -4,15 +4,15 @@ Written by Patrick Nyarukowa
 
 ![image2](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/Room%20info.png)
 
-##**Introduction**
+## **Introduction**
 
 In this writeup I will be taking you through the approach I used in tackling the Windows Jump CTF on TryHackMe. I will leave the links to the resources I used to help me complete this CTF. I will also leave a link to the CTF.
 
-##**CTF Background**
+## **CTF Background**
 
 This was a medium difficulty CTF challenge that required me to escalate my privileges on a Windows machine from a guest user to becoming a SYSTEM ( root ) user. Along the way to getting to root, I had to laterally move through the machine. I will focus on capturing the thmuser flag, notadmin flag, svcadmin flag and the SYSTEM flag.
 
-##**Reconnaissance**
+## **Reconnaissance**
 
 We start off by scanning out target ip using **nmap** to check for any open ports
 
@@ -44,7 +44,7 @@ Lets download and read the content of the file
 
 ![image8](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/welcome%20file%20credentials.png)
 
-##**Flag 1 (thmuser)**
+## **Flag 1 (thmuser)**
 
 If we remember from our **nmap** scan, port 3389 (RDP) is open. Let's use **xfreerdp** to try to connect with the credentials we just found 
 
@@ -54,7 +54,7 @@ After making our **rdp** connection, we go to the C:\\Users\\thmuser\\Desktop di
 
 ![image10](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/flag1.png)
 
-##**Flag 2 (notadmin)**
+## **Flag 2 (notadmin)**
 
 Now that we have a shell as thmuser, we look for stored credentials on the machine. A common misconfiguration on Windows is AutoLogon — administrators sometimes configure a user to log in automatically at boot, storing credentials in plain text in the registry.
 
@@ -72,7 +72,7 @@ The **runas** command allows us to to execute a program as a different user. Aft
 
 ![image14](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/shell%20and%20flag2.png)
 
-##**Flag 3 (svcadmin)**
+## **Flag 3 (svcadmin)**
 
 Since the next target is svcadmin, it suggests that it might likely be the service name. We use the **wmic** command to look for any services running under the service name svcadmin.
 
@@ -122,7 +122,7 @@ Finally, we navigate to the C:\\Users\\svcadmin\\Desktop\\ and we retrieve the s
 
 ![image24](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/flag3.png)
 
-##**Flag 4 (SYSTEM)**
+## **Flag 4 (SYSTEM)**
 
 We navigate to the C:\\Windows\\Tasks directory. This is because that is where most scheduled tasks scripts are stored. We then use the **icacls** on the cleanup.bat script to show file permissions.
 
@@ -160,11 +160,11 @@ After establishing our shell connection as SYSTEM, we navigate to the c:\\ direc
 
 ![image31](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/flag4.png)
 
-##**Takeaways**
+## **Takeaways**
 
 This CTF was a great opportunity to practice some of the most common privilege escalation techniques found in real-world environments. I got to practice networking scanning with nmap and payload generation with msfvenom. Thank you for reading this writeup and I hope you enjoy tackling this room as much as I did. 
 
-##**References**
+## **References**
 
 * [https://tryhackme.com/room/windowsjump](https://tryhackme.com/room/windowsjump)  
 * [https://github.com/brightio/penelope](https://github.com/brightio/penelope)

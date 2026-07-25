@@ -1,8 +1,8 @@
 Written by Patrick Nyarukowa
 
-# **Windows Jump Writeup** ![][image1]
+# **Windows Jump Writeup** 
 
-# ![][image2]
+# ![image2](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/Room%20info.png)
 
 # **Introduction**
 
@@ -16,7 +16,7 @@ This was a medium difficulty CTF challenge that required me to escalate my privi
 
 We start off by scanning out target ip using **nmap** to check for any open ports
 
-![][image3]
+![image3](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/nmap%20command.png)
 
 The **nmap** command can be broken down as follows:
 
@@ -26,65 +26,65 @@ The **nmap** command can be broken down as follows:
 
 From the **nmap** results, we see that port 445 (SMB) is open 
 
-![][image4]
+![image4](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/nmap%20result.png)
 
 Next, we use **netexec** (nxc) to test for guest access 
 
-![][image5]
+![image5](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/nxc%20command.png)
 
 From the **nxc** response, we see that Guest has read access to the Public share
 
-![][image6]
+![image6](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/nxc%20response.png)
 
 We can  explore further by logging in with smbclient. We find file called welcome.txt
 
-![][image7]
+![image7](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/Smb%20login.png)
 
 Lets download and read the content of the file
 
-![][image8]
+![image8](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/welcome%20file%20credentials.png)
 
 # **Flag 1 (thmuser)**
 
 If we remember from our **nmap** scan, port 3389 (RDP) is open. Let's use **xfreerdp** to try to connect with the credentials we just found 
 
-![][image9]
+![image9](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/rdp%20connection.png)
 
 After making our **rdp** connection, we go to the C:\\Users\\thmuser\\Desktop directory and we retrieve the thmuser flag from  flag1.txt 
 
-![][image10]
+![image10](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/flag1.png)
 
 # **Flag 2 (notadmin)**
 
 Now that we have a shell as thmuser, we look for stored credentials on the machine. A common misconfiguration on Windows is AutoLogon — administrators sometimes configure a user to log in automatically at boot, storing credentials in plain text in the registry.
 
-![][image11]
+![image11](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/reg%20query%20command.png)
 
 We find credentials stored in plain text  
 
-![][image12]
+![image12](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/reg%20hz%20credentials.png)
 
 Next, we use the credentials we have found to spawn a new CMD shell as notadmin using the **runas** command
 
-![][image13]
+![image13](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/runas%20command.png)
 
 The **runas** command allows us to to execute a program as a different user. After executing the command and inserting the password, a new CMD shell opens. We navigate to the C:\\Users\\notadmin\\Desktop\\ and we retrieve the notadmin flag from flag2.txt 
 
-![][image14]
+![image14](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/shell%20and%20flag2.png)
 
 # **Flag 3 (svcadmin)**
 
 Since the next target is svcadmin, it suggests that it might likely be the service name. We use the **wmic** command to look for any services running under the service name svcadmin.
 
-![][image15]
+![image15](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/svcadmin%20service%20name.png)
 
 As we can see from the results, the service THMSvc runs as svcadmin at C:\\Windows\\THMSVC\\svc.exe. If we can manage to replace the “svc.exe” executable, we will be able to get a shell as svcadmin. But first, lets check the permissions for the folder
 
-![][image16]
+![image16](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/THMSVC%20permissions.png)
 
 The “PRIVESC\\notadmin:(OI)(CI)(F)” indicates that notadmin has full control over the folder. Next, we generate a malicious payload using **msfvenom** to replace the service binary
 
-![][image17]
+![image17](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/msfvenom%20svc%20payload%20generation.png)
 
 The **msfvenom** payload command can be broken down as follows:
 
@@ -96,41 +96,41 @@ The **msfvenom** payload command can be broken down as follows:
 
 We also start our python web server to serve transfer out svc.exe malicious payload
 
-![][image18]
+![image18](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/http.server%20svc.png)
 
 In a new terminal, we set up **penelope** to listen and wait for our reverse shell
 
-![][image19]
+![image19](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/penelope%20svc%20listener.png)
 
 We download our svc.exe malicious payload from our attacking machine onto the target machine directly replacing the service binary
 
-![][image20]
+![image20](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/Powershell%20invoke%20webrequest%20command.png)
 
 We see that the svc.exe payload is downloaded on the target machine
 
-![][image21]
+![image21](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/Webrequest%20response.png)
 
 Next, we start the service which executes our malicious svc.exe and triggers the reverse shell
 
-![][image22]
+![image22](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/thmsvc%20shell%20trigger.png)
 
 We penelope listener receives the reverse  shell connection as svcadmin
 
-![][image23]
+![image23](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/peneloper%20caught%20shell.png)
 
 Finally, we navigate to the C:\\Users\\svcadmin\\Desktop\\ and we retrieve the svcadmin flag from the flag3.txt file.
 
-![][image24]
+![image24](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/flag3.png)
 
 # **Flag 4 (SYSTEM)**
 
 We navigate to the C:\\Windows\\Tasks directory. This is because that is where most scheduled tasks scripts are stored. We then use the **icacls** on the cleanup.bat script to show file permissions.
 
-![][image25]
+![image25](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/Tasks%20Processes.png)
 
 The svcadmin has modify permissions on the cleanup.bat file. We can override its content. We can create a payload to replace the script in order to get a SYSTEM shell when the scheduled task runs. Again, we use **msfvenom** to generate a payload to replace the script to get the SYSTEM shell when the scheduled task runs.
 
-![][image26]
+![image26](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/msfvenom%20root%20payload.png)
 
 The **msfvenom** payload command can be broken down as follows:
 
@@ -142,23 +142,23 @@ The **msfvenom** payload command can be broken down as follows:
 
 We also start our python http server to transfer our shell.exe payload
 
-![][image27]
+![image27](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/http.server%20root.png)
 
 We also start our **penelope** listener on port 4445 to listen for our reverse shell
 
-![][image28]
+![image28](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/penelope%20root%20listener.png)
 
 We download our shell.exe payload from our attacker machine to our windows target machine using **certitil**
 
-**![][image29]**
+**![image29](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/root%20shell%20upload.png)**
 
 Now, we trigger the reverse shell by replacing the content of the cleanup.bat file with the path to our malicious shell.exe executable
 
-![][image30]
+![image30](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/root%20shell%20trigger.png)
 
 After establishing our shell connection as SYSTEM, we navigate to the c:\\ directory and find out SYSTEM flag in the flag4.txt file
 
-![][image31]
+![image31](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/f97c8832287ba93ecfbc73d922117335aebf37f4/Windows-Jump/Screenshots/flag4.png)
 
 # **Takeaways**
 

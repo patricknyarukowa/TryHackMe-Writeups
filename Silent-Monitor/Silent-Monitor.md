@@ -2,9 +2,7 @@ Written by Patrick Nyarukowa
 
 # **Silent Monitor**
 
-![image1](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/CTF-room-info.png)
-
-# ![][image2]
+# ![image2](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/CTF-room-info.png)
 
 # **Introduction**
 

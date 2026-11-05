@@ -2,7 +2,7 @@ Written by Patrick Nyarukowa
 
 # **Silent Monitor**
 
-![][image1]
+![image1](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/CTF-room-info.png)
 
 # ![][image2]
 
@@ -18,7 +18,7 @@ This is a medium level CTF that required me to analyse a vulnerable web applicat
 
 First, we start off by using **nmap** to scan the target IP to check for any open ports:
 
-![][image3]
+![image3](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/nmap-scan.png)
 
 The **nmap** command can be broken down as follows:
 
@@ -28,36 +28,36 @@ The **nmap** command can be broken down as follows:
 
 From the response of the can, we see that 2 ports are open, port 22 and port 5050\. Because port 22 is listens for **SSH** connections, we access the web application in our browser on port 5050 which takes us to a default home page:
 
-![][image4]
+![image4](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/home-page.png)
 
 The default home page does not really give us anything to work with. We try to use **gobuster** to look for any hidden paths within the server:
 
-![][image5]
+![image5](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/gobuster-scan.png)
 
 As you can see, the **gobuster** scan revealed the unlinked path **/internal**. When we follow the hidden path in our browser, it takes us to the internal login page:
 
-![][image6]
+![image6](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/internal-login.png)
 
 # **Exploitation**
 
 Because this is a login page with input fields that likely communicate with a database, this makes us curious to the idea that this web application login functionality could be vulnerable to an **SQL Injection (SQLI)** attack. And so, we inject our payload into the input fields:
 
-![][image7]
+![image7](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/sqli-payload.png)
 
 After inputting our **SQLI** payload we authenticate and send our request. The **SQLI** payload works and redirects us to the internal home dashboard:
 
-![][image8]
+![image8](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/internal-home.png)
 
 We browse around the site for anything interesting. This leads us to a function called Host Health. After playing around with this function it reveals that the ping command gets executed on the shell. This immediately gives us the thought of **command injection** trying to provocate errors:
 
-![][image9]
+![image9](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/cm-injection-test.png)
 
 Through the use of **burpsuite**, we try multiple ways to pass commands. Finally we conclude that causing a new line does the trick:
 
-![][image10]
+![image10](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/newline-cm-test.png)
 
 Having the **command injection**, we play around until we find a file called “secret.config” which exposes something interesting:  
-![][image11]
+![image11](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/secret-config-file.png)
 
 The secret.config file reveals some credentials. 
 
@@ -65,17 +65,17 @@ The secret.config file reveals some credentials.
 
 If we remember from our **nmap** scan, port 22 is open which listens for **SSH** connections. So we use the credentials from the **command injection** to login on the **SSH** server and we find the user flag:
 
-![][image12]
+![image12](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/flag1.png)
 
 # **Root flag**
 
 In the backup directory there is .kdbx file that is related to KeePass. When we check the kernel version we can assume that it might be vulnerable to a vulnerability called “copy fail”. With that knowledge, we can create a **python** file on the machine and paste the code into it:
 
-![][image13]
+![image13](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/python-payload.png)
 
 Thereafter, we can run the **python** file and this escalates our privileges to root. With this new privilege, we search and find the root flag in the /root directory:
 
-![][image14]  
+![image14](https://github.com/patricknyarukowa/TryHackMe-Writeups/blob/402070c5991002e3eb1585e5a1ddd918519bd132/Silent-Monitor/Screenshots/flag2.png)  
 
 # **Takeaways**
 
